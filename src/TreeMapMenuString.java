@@ -15,14 +15,18 @@ public class TreeMapMenuString {
             opcion = leerEntero(sc, "Elige opción: ", 1, OPCION_SALIR);
 
             switch (opcion) {
-                case 1 -> { // Agregar un string a una clave (append)
+
+                // ============================================================
+                // 🧠 PATRÓN 1: INSERCIÓN Y REEMPLAZO
+                // ============================================================
+                case 1 -> { // append a una clave
                     int k = leerEntero(sc, "Clave (entero): ");
                     String v = leerLinea(sc, "Valor (string): ");
                     mapa.computeIfAbsent(k, kk -> new ArrayList<>()).add(v);
                     System.out.println("OK. " + k + " -> " + mapa.get(k));
                 }
 
-                case 2 -> { // Agregar varios strings CSV (ej: a,b,c) a una clave
+                case 2 -> { // append CSV
                     int k = leerEntero(sc, "Clave (entero): ");
                     String csv = leerLinea(sc, "Valores CSV (ej: a,b,c): ");
                     List<String> vals = parseCSVStrSimple(csv);
@@ -30,7 +34,7 @@ public class TreeMapMenuString {
                     System.out.println("OK. " + k + " -> " + mapa.get(k));
                 }
 
-                case 3 -> { // Reemplazar lista completa de una clave
+                case 3 -> { // reemplazar lista completa
                     int k = leerEntero(sc, "Clave (entero): ");
                     String csv = leerLinea(sc, "Nueva lista CSV (ej: a,b,c): ");
                     List<String> vals = parseCSVStrSimple(csv);
@@ -38,13 +42,16 @@ public class TreeMapMenuString {
                     System.out.println("Reemplazado. " + k + " -> " + mapa.get(k));
                 }
 
-                case 4 -> { // Eliminar clave
+                // ============================================================
+                // 🧠 PATRÓN 2: ELIMINACIÓN Y LIMPIEZA
+                // ============================================================
+                case 4 -> { // eliminar clave
                     int k = leerEntero(sc, "Clave a eliminar (entero): ");
                     List<String> removed = mapa.remove(k);
                     System.out.println(removed != null ? "Eliminado: " + k + " -> " + removed : "No existía la clave.");
                 }
 
-                case 5 -> { // Eliminar primera ocurrencia de un valor en una clave
+                case 5 -> { // eliminar primera ocurrencia en clave
                     int k = leerEntero(sc, "Clave (entero): ");
                     String v = leerLinea(sc, "Valor a eliminar (primera ocurrencia): ");
                     List<String> list = mapa.get(k);
@@ -53,7 +60,7 @@ public class TreeMapMenuString {
                     System.out.println(ok ? "Eliminado \"" + v + "\" en " + k + ". Lista: " + list : "Valor no encontrado.");
                 }
 
-                case 6 -> { // Eliminar TODAS las ocurrencias de un valor en una clave
+                case 6 -> { // eliminar todas las ocurrencias en clave
                     int k = leerEntero(sc, "Clave (entero): ");
                     String v = leerLinea(sc, "Valor a eliminar (todas las ocurrencias): ");
                     List<String> list = mapa.get(k);
@@ -62,24 +69,39 @@ public class TreeMapMenuString {
                     System.out.println(ok ? "Eliminadas todas las ocurrencias. Lista: " + list : "No había ocurrencias.");
                 }
 
-                case 7 -> { // Obtener lista por clave
+                case 28 -> { // limpiar mapa completo
+                    mapa.clear();
+                    System.out.println("Mapa limpiado.");
+                }
+
+                // ============================================================
+                // 🧠 PATRÓN 3: CONSULTAS Y VISTAS
+                // ============================================================
+                case 7 -> { // obtener lista por clave
                     int k = leerEntero(sc, "Clave (entero): ");
                     System.out.println(k + " -> " + mapa.get(k));
                 }
 
-                case 8 -> { // Listar todo (orden natural de claves)
+                case 8 -> { // listar todo
                     if (mapa.isEmpty()) { System.out.println("Mapa vacío."); break; }
                     mapa.forEach((k, v) -> System.out.println(k + " -> " + v));
                 }
 
-                case 9 -> { // Vistas: keySet / size / total elementos
+                case 9 -> { // vistas / tamaños
                     System.out.println("Claves: " + mapa.navigableKeySet());
                     System.out.println("Tamaño del mapa: " + mapa.size());
                     int totalValores = mapa.values().stream().mapToInt(List::size).sum();
                     System.out.println("Total de strings en listas: " + totalValores);
                 }
 
-                case 10 -> { // Ordenar lista de una clave (ASC/DESC)
+                case 29 -> { // size / isEmpty rápido
+                    System.out.println("size=" + mapa.size() + " | isEmpty=" + mapa.isEmpty());
+                }
+
+                // ============================================================
+                // 🧠 PATRÓN 4: ORDENAMIENTO Y NORMALIZACIÓN
+                // ============================================================
+                case 10 -> { // ordenar lista de una clave (ASC/DESC)
                     int k = leerEntero(sc, "Clave (entero): ");
                     String ord = leerLinea(sc, "Orden (ASC/DESC): ").trim().toUpperCase();
                     List<String> list = mapa.get(k);
@@ -89,7 +111,7 @@ public class TreeMapMenuString {
                     System.out.println("OK. " + k + " -> " + list);
                 }
 
-                case 11 -> { // Normalizar lista de una clave (orden asc + únicos)
+                case 11 -> { // normalizar una clave (orden + únicos)
                     int k = leerEntero(sc, "Clave (entero): ");
                     List<String> list = mapa.get(k);
                     if (list == null) { System.out.println("No existe la clave."); break; }
@@ -99,7 +121,7 @@ public class TreeMapMenuString {
                     System.out.println("Normalizada. " + k + " -> " + norm);
                 }
 
-                case 12 -> { // Normalizar TODAS las listas (orden asc + únicos)
+                case 12 -> { // normalizar todas (orden + únicos)
                     mapa.replaceAll((kk, list) -> {
                         if (list == null) return new ArrayList<>();
                         List<String> cp = new ArrayList<>(list);
@@ -109,7 +131,10 @@ public class TreeMapMenuString {
                     System.out.println("Todas las listas normalizadas.");
                 }
 
-                case 13 -> { // Estadísticas de una clave (sobre longitudes de strings)
+                // ============================================================
+                // 🧠 PATRÓN 5: ESTADÍSTICAS Y TOP-N
+                // ============================================================
+                case 13 -> { // stats por clave (longitudes)
                     int k = leerEntero(sc, "Clave (entero): ");
                     List<String> list = mapa.get(k);
                     if (list == null || list.isEmpty()) { System.out.println("No hay datos."); break; }
@@ -118,7 +143,7 @@ public class TreeMapMenuString {
                             + ", min_len=" + stats.getMin() + ", max_len=" + stats.getMax());
                 }
 
-                case 14 -> { // Estadísticas globales (longitudes)
+                case 14 -> { // stats globales (longitudes)
                     List<String> all = mapa.values().stream().flatMap(List::stream).toList();
                     if (all.isEmpty()) { System.out.println("No hay datos."); break; }
                     IntSummaryStatistics stats = all.stream().mapToInt(s -> s == null ? 0 : s.length()).summaryStatistics();
@@ -126,7 +151,7 @@ public class TreeMapMenuString {
                             + ", avg_len=" + stats.getAverage() + ", min_len=" + stats.getMin() + ", max_len=" + stats.getMax());
                 }
 
-                case 15 -> { // Top-N por tamaño de lista (desc)
+                case 15 -> { // Top-N por tamaño de lista
                     int n = leerEntero(sc, "¿Top-N por tamaño de lista? ");
                     List<Map.Entry<Integer, Integer>> top = mapa.entrySet().stream()
                             .map(e -> Map.entry(e.getKey(), e.getValue().size()))
@@ -136,7 +161,7 @@ public class TreeMapMenuString {
                     System.out.println("Top-" + n + " por tamaño de lista: " + top);
                 }
 
-                case 16 -> { // Top-N por promedio de longitud de strings (desc)
+                case 16 -> { // Top-N por promedio de longitud
                     int n = leerEntero(sc, "¿Top-N por promedio de longitud? ");
                     List<Map.Entry<Integer, Double>> top = mapa.entrySet().stream()
                             .map(e -> {
@@ -157,6 +182,9 @@ public class TreeMapMenuString {
                     System.out.println("Top-" + n + " por promedio de longitud: " + top);
                 }
 
+                // ============================================================
+                // 🧠 PATRÓN 6: SUBMAPAS Y NAVEGACIÓN ORDENADA
+                // ============================================================
                 case 17 -> { // subMap(min..max) con inclusividad
                     if (mapa.isEmpty()) { System.out.println("Mapa vacío."); break; }
                     int min = leerEntero(sc, "Clave mínima (entero): ");
@@ -164,9 +192,7 @@ public class TreeMapMenuString {
                     boolean incMin = leerBoolean(sc, "¿Incluir mínima? (true/false): ");
                     boolean incMax = leerBoolean(sc, "¿Incluir máxima? (true/false): ");
                     NavigableMap<Integer, List<String>> sub = mapa.subMap(min, incMin, max, incMax);
-                    System.out.println(
-                            "subMap " + (incMin ? "[" : "(") + min + " .. " + max + (incMax ? "]" : ")") + ": " + sub
-                    );
+                    System.out.println("subMap " + (incMin ? "[" : "(") + min + " .. " + max + (incMax ? "]" : ")") + ": " + sub);
                 }
 
                 case 18 -> { // headMap / tailMap con inclusividad
@@ -177,12 +203,12 @@ public class TreeMapMenuString {
                     System.out.println("tailMap: " + mapa.tailMap(piv, inc));
                 }
 
-                case 19 -> { // Descending map / descendingKeySet
+                case 19 -> { // vistas descendentes
                     System.out.println("descendingMap: " + mapa.descendingMap());
                     System.out.println("descendingKeySet: " + mapa.descendingKeySet());
                 }
 
-                case 20 -> { // pollFirstEntry / pollLastEntry
+                case 20 -> { // poll extremos
                     if (mapa.isEmpty()) { System.out.println("Mapa vacío."); break; }
                     String extremo = leerLinea(sc, "¿'FIRST' o 'LAST'?: ").trim().toUpperCase();
                     Map.Entry<Integer, List<String>> polled = switch (extremo) {
@@ -194,22 +220,28 @@ public class TreeMapMenuString {
                     System.out.println("Mapa ahora: " + mapa);
                 }
 
-                case 21 -> { // Transformar: UPPERCASE en TODAS las listas
+                // ============================================================
+                // 🧠 PATRÓN 7: TRANSFORMACIONES MASIVAS (STRING→STRING)
+                // ============================================================
+                case 21 -> { // uppercase todas las listas
                     mapa.replaceAll((k, list) -> mapStrings(list, s -> s == null ? null : s.toUpperCase()));
                     System.out.println("OK. Transformación a MAYÚSCULAS aplicada.");
                 }
 
-                case 22 -> { // Transformar: lowercase en TODAS las listas
+                case 22 -> { // lowercase todas las listas
                     mapa.replaceAll((k, list) -> mapStrings(list, s -> s == null ? null : s.toLowerCase()));
                     System.out.println("OK. Transformación a minúsculas aplicada.");
                 }
 
-                case 23 -> { // Transformar: trim en TODAS las listas
+                case 23 -> { // trim todas las listas
                     mapa.replaceAll((k, list) -> mapStrings(list, s -> s == null ? null : s.trim()));
                     System.out.println("OK. Trim aplicado.");
                 }
 
-                case 24 -> { // Importar y MERGE desde CSV k:v1|v2|...
+                // ============================================================
+                // 🧠 PATRÓN 8: IMPORTACIÓN / EXPORTACIÓN
+                // ============================================================
+                case 24 -> { // MERGE desde CSV k:v1|v2|...
                     String csv = leerLinea(sc, "CSV (ej: 2024:a|b|c,2025:x|y): ");
                     NavigableMap<Integer, List<String>> otro = parseCSVMapList(csv);
                     for (var e : otro.entrySet()) {
@@ -223,14 +255,14 @@ public class TreeMapMenuString {
                     System.out.println("Merge OK. Mapa: " + mapa);
                 }
 
-                case 25 -> { // Importar y REEMPLAZAR (putAll) desde CSV
+                case 25 -> { // REEMPLAZAR (putAll) desde CSV
                     String csv = leerLinea(sc, "CSV (ej: 2024:a|b|c,2025:x|y): ");
                     NavigableMap<Integer, List<String>> otro = parseCSVMapList(csv);
                     mapa.putAll(otro);
                     System.out.println("putAll OK. Mapa: " + mapa);
                 }
 
-                case 26 -> { // Exportar a CSV k:v1|v2|...
+                case 26 -> { // exportar a CSV
                     String export = mapa.entrySet().stream()
                             .map(e -> e.getKey() + ":" +
                                     e.getValue().stream().map(s -> s == null ? "null" : s).collect(Collectors.joining("|")))
@@ -238,6 +270,9 @@ public class TreeMapMenuString {
                     System.out.println("CSV: " + export);
                 }
 
+                // ============================================================
+                // 🧠 PATRÓN 9: CONSULTAS BOOLEANAS
+                // ============================================================
                 case 27 -> { // containsKey / contiene valor
                     int k = leerEntero(sc, "Clave (entero): ");
                     String v = leerLinea(sc, "Valor (string) a buscar en su lista: ");
@@ -246,15 +281,9 @@ public class TreeMapMenuString {
                     System.out.println("containsKey? " + hasKey + " | contiene valor? " + hasVal);
                 }
 
-                case 28 -> { // Limpiar mapa
-                    mapa.clear();
-                    System.out.println("Mapa limpiado.");
-                }
-
-                case 29 -> { // size / isEmpty
-                    System.out.println("size=" + mapa.size() + " | isEmpty=" + mapa.isEmpty());
-                }
-
+                // ============================================================
+                // 🧠 PATRÓN 10: SALIR
+                // ============================================================
                 case 30 -> System.out.println("Saliendo...");
                 default -> System.out.println("Opción no válida.");
             }
@@ -264,9 +293,9 @@ public class TreeMapMenuString {
         sc.close();
     }
 
-    // ---------------------------
-    //  Utilidades de I/O y parse
-    // ---------------------------
+    // =======================
+    // Helpers de I/O y parse
+    // =======================
 
     static void mostrarMenu() {
         System.out.println("\n--- MENÚ TREEMAP (Integer -> List<String>) ---");

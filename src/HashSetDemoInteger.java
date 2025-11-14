@@ -4,12 +4,6 @@ import java.util.stream.Collectors;
 
 /**
  * Demo integral de HashSet<Integer> con menú interactivo.
- * - Muestra operaciones básicas (add, remove, contains, size, isEmpty).
- * - Recorridos (for-each, Iterator).
- * - Conjuntos: unión, intersección, diferencia.
- * - Utilidades: toArray, containsAll, equals/hashCode, clone.
- * - Streams: filter/map/sorted/collect, any/all/noneMatch, groupingBy, toMap.
- *
  * NOTA: HashSet NO garantiza orden de iteración.
  */
 public class HashSetDemoInteger {
@@ -30,6 +24,9 @@ public class HashSetDemoInteger {
 
             switch (opcion) {
 
+                // ====================================================
+                // 🧠 PATRÓN: CONSTRUIR / AGREGAR
+                // ====================================================
                 case 1 -> { // add
                     /**
                      * add(E e): Inserta el número si NO estaba presente.
@@ -41,6 +38,9 @@ public class HashSetDemoInteger {
                     System.out.println(added ? "Agregado correctamente." : "Ya existía.");
                 }
 
+                // ====================================================
+                // 🧠 PATRÓN: ELIMINAR
+                // ====================================================
                 case 2 -> { // remove
                     /**
                      * remove(Object o): Elimina el elemento si existe.
@@ -51,6 +51,9 @@ public class HashSetDemoInteger {
                     System.out.println(removed ? "Eliminado." : "No encontrado.");
                 }
 
+                // ====================================================
+                // 🧠 PATRÓN: CONSULTAR / ESTADO
+                // ====================================================
                 case 3 -> { // contains
                     /**
                      * contains(Object o): Verifica pertenencia en O(1) promedio.
@@ -58,7 +61,6 @@ public class HashSetDemoInteger {
                     int n = leerEntero(sc, "Número a buscar: ");
                     System.out.println(numeros.contains(n) ? "Sí está." : "No está.");
                 }
-
                 case 4 -> { // size / isEmpty
                     /**
                      * size(): cantidad de elementos.
@@ -68,9 +70,12 @@ public class HashSetDemoInteger {
                     System.out.println("isEmpty(): " + numeros.isEmpty());
                 }
 
+                // ====================================================
+                // 🧠 PATRÓN: RECORRER / LISTAR
+                // ====================================================
                 case 5 -> { // listar for-each (sin orden garantizado)
                     /**
-                     * Recorre el set con for-each. El orden es arbitrario (propio de HashSet).
+                     * Recorre el set con for-each. El orden es arbitrario.
                      */
                     if (numeros.isEmpty()) {
                         System.out.println("Conjunto vacío.");
@@ -80,7 +85,6 @@ public class HashSetDemoInteger {
                         }
                     }
                 }
-
                 case 6 -> { // Iterator (sin orden garantizado)
                     /**
                      * Recorre con Iterator manualmente (útil si quieres remove() seguro durante iteración).
@@ -96,10 +100,12 @@ public class HashSetDemoInteger {
                     }
                 }
 
+                // ====================================================
+                // 🧠 PATRÓN: TEORÍA DE CONJUNTOS (UNIÓN / INTERSECCIÓN / DIFERENCIA)
+                // ====================================================
                 case 7 -> { // unión
                     /**
-                     * Unión: A ∪ B = elementos en A o en B (sin duplicados).
-                     * addAll(Collection): retorna true si el set cambió.
+                     * A ∪ B: elementos en A o en B (sin duplicados).
                      */
                     Set<Integer> otro = csvInt(sc, "Números (sep. por comas): ");
                     Set<Integer> union = new HashSet<>(numeros); // copia para no alterar 'numeros'
@@ -108,12 +114,9 @@ public class HashSetDemoInteger {
                     System.out.println("Unión: " + union);
                     System.out.println("¿Cambió?: " + cambio);
                 }
-
                 case 8 -> { // intersección
                     /**
-                     * Intersección: A ∩ B = elementos comunes a ambos.
-                     * retainAll(Collection): keep-only elementos presentes en el argumento.
-                     * Retorna true si el set cambió (se eliminaron elementos).
+                     * A ∩ B: elementos comunes.
                      */
                     Set<Integer> otro = csvInt(sc, "Números (sep. por comas): ");
                     Set<Integer> inter = new HashSet<>(numeros);
@@ -122,12 +125,9 @@ public class HashSetDemoInteger {
                     System.out.println("Intersección: " + inter);
                     System.out.println("¿Cambió?: " + cambio);
                 }
-
                 case 9 -> { // diferencia
                     /**
-                     * Diferencia: A \ B = elementos en A que NO están en B.
-                     * removeAll(Collection): elimina todos los que aparezcan en el argumento.
-                     * Retorna true si se eliminaron elementos.
+                     * A \ B: elementos en A que NO están en B.
                      */
                     Set<Integer> otro = csvInt(sc, "Números (sep. por comas): ");
                     Set<Integer> dif = new HashSet<>(numeros);
@@ -137,51 +137,36 @@ public class HashSetDemoInteger {
                     System.out.println("¿Se eliminaron elementos?: " + cambio);
                 }
 
+                // ====================================================
+                // 🧠 PATRÓN: CONVERSIÓN / UTILIDADES
+                // ====================================================
                 case 10 -> { // toArray
                     /**
-                     * toArray(IntFunction<T[]> generator): crea un array tipado.
-                     * Ventaja: evita castings y arrays de Object[].
+                     * toArray(IntFunction<T[]>): crea un array tipado.
                      */
                     Integer[] arr = numeros.toArray(Integer[]::new);
                     System.out.println("Array: " + Arrays.toString(arr));
                 }
-
                 case 11 -> { // containsAll
                     /**
-                     * containsAll(Collection<?> c): true si TODOS los elementos de c están en el set.
-                     * Útil para probar si 'numeros' es un superconjunto de 'otro'.
+                     * true si TODOS los elementos de c están en el set.
                      */
                     Set<Integer> otro = csvInt(sc, "Números (sep. por comas): ");
                     System.out.println("¿numeros contiene a 'otro'?: " + numeros.containsAll(otro));
                 }
-
-                case 12 -> { // removeIf
-                    /**
-                     * removeIf(Predicate): elimina todos los elementos que cumplan el predicado.
-                     * Retorna true si cambió el set.
-                     */
-                    int limite = leerEntero(sc, "Eliminar números menores a: ");
-                    Predicate<Integer> pred = n -> n < limite;
-                    boolean cambio = numeros.removeIf(pred);
-                    System.out.println("¿Cambió?: " + cambio);
-                    System.out.println("Restante: " + numeros);
-                }
-
                 case 13 -> { // equals / hashCode
                     /**
-                     * equals(Object): true si dos sets contienen EXACTAMENTE los mismos elementos (orden irrelevante).
-                     * hashCode(): consistente con equals (mismos elementos => mismo hash).
+                     * equals: mismos elementos (orden irrelevante) => true.
+                     * hashCode: consistente con equals.
                      */
                     Set<Integer> otro = csvInt(sc, "Números (sep. por comas): ");
                     System.out.println("equals?: " + numeros.equals(otro));
                     System.out.println("hashCode numeros: " + numeros.hashCode());
                     System.out.println("hashCode otro: " + otro.hashCode());
                 }
-
                 case 14 -> { // clone
                     /**
                      * clone(): copia superficial del HashSet (nueva instancia, mismos elementos).
-                     * Para tipos inmutables como Integer, es suficiente.
                      */
                     @SuppressWarnings("unchecked")
                     HashSet<Integer> copia = (HashSet<Integer>) numeros.clone();
@@ -190,12 +175,24 @@ public class HashSetDemoInteger {
                     System.out.println("equals?: " + copia.equals(numeros));
                 }
 
-                case 15 -> { // stream: conteo / orden natural
+                // ====================================================
+                // 🧠 PATRÓN: FILTRAR / TRANSFORMAR EN BLOQUE (CON PREDICADO)
+                // ====================================================
+                case 12 -> { // removeIf
                     /**
-                     * Ejemplos con Streams:
-                     * - count filtrado
-                     * - sorted(): orden natural ascendente (crea stream ordenado, NO cambia el set)
+                     * removeIf(Predicate): elimina todos los elementos que cumplan el predicado.
                      */
+                    int limite = leerEntero(sc, "Eliminar números menores a: ");
+                    Predicate<Integer> pred = n -> n < limite;
+                    boolean cambio = numeros.removeIf(pred);
+                    System.out.println("¿Cambió?: " + cambio);
+                    System.out.println("Restante: " + numeros);
+                }
+
+                // ====================================================
+                // 🧠 PATRÓN: STREAMS / ANÁLISIS (conteo, orden, map, collect, matchers, groupingBy, toMap)
+                // ====================================================
+                case 15 -> { // conteo / sorted
                     int limite = leerEntero(sc, "Contar números mayores a: ");
                     long conteo = numeros.stream().filter(n -> n > limite).count();
                     System.out.println("Coincidencias: " + conteo);
@@ -203,43 +200,27 @@ public class HashSetDemoInteger {
                     List<Integer> ordenados = numeros.stream().sorted().toList();
                     System.out.println("Ordenados (asc): " + ordenados);
                 }
-
                 case 16 -> { // map
-                    /**
-                     * map(Function): transforma cada elemento y devuelve un stream del nuevo tipo/valor.
-                     * toList(): crea lista inmutable (desde Java 16); si usas Java 8-15, usa collect(Collectors.toList()).
-                     */
                     var dobles = numeros.stream().map(n -> n * 2).toList();
                     System.out.println("Dobles: " + dobles);
 
                     var cuadrados = numeros.stream().map(n -> n * n).toList();
                     System.out.println("Cuadrados: " + cuadrados);
                 }
-
-                case 17 -> { // sorted con Comparator (reverse / custom)
-                    /**
-                     * sorted(Comparator): orden con criterio:
-                     * - reverseOrder(): descendente
-                     * - comparingInt + thenComparingInt: criterio compuesto
-                     */
+                case 17 -> { // sorted con Comparator
                     var reverso = numeros.stream().sorted(Comparator.reverseOrder()).toList();
                     System.out.println("Orden inverso (desc): " + reverso);
 
                     var porResiduo = numeros.stream()
                             .sorted(
                                     Comparator
-                                            .comparingInt((Integer n) -> n % 10)      // 1° criterio: residuo mod 10
-                                            .thenComparingInt(Integer::intValue)      // 2° criterio: orden natural
+                                            .comparingInt((Integer n) -> n % 10)      // 1°: residuo mod 10
+                                            .thenComparingInt(Integer::intValue)      // 2°: orden natural
                             )
                             .toList();
                     System.out.println("Orden por residuo (y natural si empatan): " + porResiduo);
                 }
-
                 case 18 -> { // collect
-                    /**
-                     * collect(Collectors.toSet()): colecciona a Set (NO garantiza tipo específico).
-                     * joining(): une strings con separador.
-                     */
                     int limite = leerEntero(sc, "Filtrar números mayores a: ");
                     Set<Integer> filtrado = numeros.stream().filter(n -> n > limite).collect(Collectors.toSet());
                     System.out.println("Filtrado→Set (> " + limite + "): " + filtrado);
@@ -249,26 +230,14 @@ public class HashSetDemoInteger {
                             .collect(Collectors.joining(", "));
                     System.out.println("joining: " + unidos);
                 }
-
                 case 19 -> { // anyMatch / allMatch / noneMatch
-                    /**
-                     * anyMatch: ¿existe algún elemento que cumpla?
-                     * allMatch: ¿todos cumplen?
-                     * noneMatch: ¿ninguno cumple?
-                     */
                     int limite = leerEntero(sc, "Límite: ");
                     boolean alguno = numeros.stream().anyMatch(n -> n > limite);
                     boolean todos = numeros.stream().allMatch(n -> n > limite);
                     boolean ninguno = numeros.stream().noneMatch(n -> n > limite);
                     System.out.println("anyMatch: " + alguno + " | allMatch: " + todos + " | noneMatch: " + ninguno);
                 }
-
                 case 20 -> { // groupingBy / toMap
-                    /**
-                     * groupingBy: agrupa en Map<claveDeGrupo, List<elem>>
-                     *   Aquí agrupamos por paridad: 0 = pares, 1 = impares.
-                     * toMap: crea un mapa con función clave y función valor (ojo con claves repetidas).
-                     */
                     Map<Integer, List<Integer>> porParidad = numeros.stream()
                             .collect(Collectors.groupingBy(n -> n % 2)); // 0: pares, 1: impares
                     System.out.println("groupingBy(paridad): " + porParidad);
@@ -278,6 +247,9 @@ public class HashSetDemoInteger {
                     System.out.println("toMap(n -> n^2): " + mapa);
                 }
 
+                // ====================================================
+                // 🧠 PATRÓN: LIMPIEZA / RESET
+                // ====================================================
                 case 21 -> { // clear
                     /**
                      * clear(): elimina TODOS los elementos del set.
@@ -286,6 +258,9 @@ public class HashSetDemoInteger {
                     System.out.println("Conjunto limpiado.");
                 }
 
+                // ====================================================
+                // 🏁 SALIR
+                // ====================================================
                 case OPCION_SALIR -> {
                     System.out.println("Gracias por usar el programa. ¡Hasta luego!");
                 }
@@ -302,31 +277,31 @@ public class HashSetDemoInteger {
     // Helpers de interacción
     // ----------------------
 
-    /** Muestra el menú principal de opciones. */
+    /** Muestra el menú principal de opciones (etiquetado por patrones). */
     static void mostrarMenu() {
-        System.out.println("\n--- MENÚ HASHSET (ENTEROS) ---");
-        System.out.println("1  . Agregar");
-        System.out.println("2  . Eliminar");
-        System.out.println("3  . Buscar");
-        System.out.println("4  . Tamaño/Vacío");
-        System.out.println("5  . Listar (for-each)");
-        System.out.println("6  . Listar con Iterator");
-        System.out.println("7  . Unión");
-        System.out.println("8  . Intersección");
-        System.out.println("9  . Diferencia");
-        System.out.println("10 . Convertir a array");
-        System.out.println("11 . Subconjunto (containsAll)");
-        System.out.println("12 . Borrado condicional (removeIf)");
-        System.out.println("13 . Igualdad/Hash (equals/hashCode)");
-        System.out.println("14 . Clonar (clone)");
-        System.out.println("15 . Stream: conteo / orden");
-        System.out.println("16 . Stream: map (dobles / cuadrados)");
-        System.out.println("17 . Stream: sorted (reverso / residuo)");
-        System.out.println("18 . Stream: collect (toSet / joining)");
-        System.out.println("19 . Stream: anyMatch / allMatch / noneMatch");
-        System.out.println("20 . Stream: groupingBy / toMap");
-        System.out.println("21 . Limpiar");
-        System.out.println("22 . Salir");
+        System.out.println("\n--- MENÚ HASHSET (ENTEROS) — agrupado por patrones ---");
+        System.out.println(" 1  . Agregar (CONSTRUIR/AGREGAR)");
+        System.out.println(" 2  . Eliminar (ELIMINAR)");
+        System.out.println(" 3  . Buscar (CONSULTAR)");
+        System.out.println(" 4  . Tamaño/Vacío (CONSULTAR)");
+        System.out.println(" 5  . Listar for-each (RECORRER)");
+        System.out.println(" 6  . Listar con Iterator (RECORRER)");
+        System.out.println(" 7  . Unión (CONJUNTOS)");
+        System.out.println(" 8  . Intersección (CONJUNTOS)");
+        System.out.println(" 9  . Diferencia (CONJUNTOS)");
+        System.out.println(" 10 . Convertir a array (CONVERSIÓN/UTILIDADES)");
+        System.out.println(" 11 . Subconjunto containsAll (CONVERSIÓN/UTILIDADES)");
+        System.out.println(" 12 . Borrado condicional removeIf (FILTRAR/BLOQUE)");
+        System.out.println(" 13 . Igualdad/Hash equals/hashCode (CONVERSIÓN/UTILIDADES)");
+        System.out.println(" 14 . Clonar clone (CONVERSIÓN/UTILIDADES)");
+        System.out.println(" 15 . Streams: conteo/orden (STREAMS/ANÁLISIS)");
+        System.out.println(" 16 . Streams: map (dobles/cuadrados) (STREAMS/ANÁLISIS)");
+        System.out.println(" 17 . Streams: sorted (reverso/residuo) (STREAMS/ANÁLISIS)");
+        System.out.println(" 18 . Streams: collect (toSet/joining) (STREAMS/ANÁLISIS)");
+        System.out.println(" 19 . Streams: any/all/noneMatch (STREAMS/ANÁLISIS)");
+        System.out.println(" 20 . Streams: groupingBy / toMap (STREAMS/ANÁLISIS)");
+        System.out.println(" 21 . Limpiar (LIMPIEZA/RESET)");
+        System.out.println(" 22 . Salir");
     }
 
     /**

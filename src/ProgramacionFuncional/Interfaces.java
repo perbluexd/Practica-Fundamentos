@@ -1,4 +1,4 @@
-package ProgramaciónFuncional;
+package ProgramacionFuncional;
 
 public class Interfaces {
 

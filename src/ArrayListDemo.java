@@ -3,6 +3,9 @@ import java.util.Scanner;
 
 public class ArrayListDemo {
     public static void main(String[] args) {
+        // ====================================================
+        // 🧱 SETUP / I/O (infra de la demo)
+        // ====================================================
         try (Scanner sc = new Scanner(System.in)) {
             ArrayList<String> nombres = new ArrayList<>();
             int opcion;
@@ -12,6 +15,11 @@ public class ArrayListDemo {
                 opcion = leerEntero(sc, "Elige una opción: ", 1, 5);
 
                 switch (opcion) {
+                    // ====================================================
+                    // 🧠 PATRÓN: CONSTRUIR / AGREGAR
+                    // Objetivo: incorporar elementos a la colección
+                    // Métodos: add, addAll (no usado aquí)
+                    // ====================================================
                     case 1 -> {
                         System.out.print("Ingresa un nombre: ");
                         String nombre = sc.nextLine().trim();
@@ -22,17 +30,29 @@ public class ArrayListDemo {
                             System.out.println("✅ Nombre agregado correctamente.");
                         }
                     }
+
+                    // ====================================================
+                    // 🧠 PATRÓN: EXPLORAR / INSPECCIONAR
+                    // Objetivo: ver el contenido y estado de la lista
+                    // Métodos: isEmpty, size, iteración/forEach
+                    // ====================================================
                     case 2 -> {
                         if (nombres.isEmpty()) {
                             System.out.println("La lista está vacía.");
                         } else {
-                            System.out.println("Lista de nombres:");
+                            System.out.println("Lista de nombres (size=" + nombres.size() + "):");
                             int i = 1;
                             for (String n : nombres) {
                                 System.out.println(i++ + ". " + n);
                             }
                         }
                     }
+
+                    // ====================================================
+                    // 🧠 PATRÓN: BUSCAR
+                    // Objetivo: comprobar existencia / localizar elementos
+                    // Métodos: contains, indexOf/lastIndexOf (no usados aquí)
+                    // ====================================================
                     case 3 -> {
                         System.out.print("Ingresa el nombre a buscar: ");
                         String buscar = sc.nextLine().trim();
@@ -42,6 +62,12 @@ public class ArrayListDemo {
                             System.out.println("❌ El nombre '" + buscar + "' NO está en la lista.");
                         }
                     }
+
+                    // ====================================================
+                    // 🧠 PATRÓN: TRANSFORMAR / FILTRAR (ELIMINAR)
+                    // Objetivo: modificar el contenido removiendo elementos
+                    // Métodos: remove(Object), removeIf (no usado aquí)
+                    // ====================================================
                     case 4 -> {
                         System.out.print("Ingresa el nombre a eliminar: ");
                         String eliminar = sc.nextLine().trim();
@@ -51,7 +77,12 @@ public class ArrayListDemo {
                             System.out.println("❌ Ese nombre no existe en la lista.");
                         }
                     }
+
+                    // ====================================================
+                    // 🏁 SALIR
+                    // ====================================================
                     case 5 -> System.out.println("👋 Saliendo del programa...");
+
                     default -> System.out.println("Opción inválida.");
                 }
             } while (opcion != 5);
@@ -62,10 +93,10 @@ public class ArrayListDemo {
         System.out.println("""
                 
                 --- MENÚ ARRAYLIST ---
-                1. Agregar nombre
-                2. Mostrar todos los nombres
-                3. Buscar nombre
-                4. Eliminar nombre
+                1. Agregar nombre        (CONSTRUIR / AGREGAR)
+                2. Mostrar todos         (EXPLORAR / INSPECCIONAR)
+                3. Buscar nombre         (BUSCAR)
+                4. Eliminar nombre       (TRANSFORMAR / FILTRAR)
                 5. Salir
                 """);
     }

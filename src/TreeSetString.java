@@ -1,96 +1,96 @@
 import java.util.*;
-import java.util.function.Predicate;
 
 public class TreeSetString {
-    // Constante para indicar la opción de salir
+
+    // =========================
+    // Constantes / Config
+    // =========================
     public static final int OPCION_SALIR = 12;
 
     public static void main(String[] args) {
-        // try-with-resources: cierra el Scanner automáticamente al salir
         try (Scanner sc = new Scanner(System.in)) {
-            // TreeSet para almacenar palabras ordenadas alfabéticamente (orden natural de String)
-            TreeSet<String> palabras = new TreeSet<>();
+            TreeSet<String> palabras = new TreeSet<>(); // orden natural (alfabético)
             int opcion;
 
-            // Bucle principal del menú
             do {
-                mostrarMenu(); // muestra opciones
+                mostrarMenu();
                 opcion = leerEntero(sc, "Ingresa la opción que deseas: ", 1, OPCION_SALIR);
 
                 switch (opcion) {
-                    case 1 -> { // add
-                        // Agregar una palabra al conjunto
-                        var s = leerLineaNoVacia(sc, "Ingresa la palabra a agregar: ");
+
+                    // ============================================================
+                    // 🧠 PATRÓN 1: INSERCIÓN / POBLACIÓN
+                    // ============================================================
+                    case 1 -> {
+                        String s = leerLineaNoVacia(sc, "Ingresa la palabra a agregar: ");
                         boolean ok = palabras.add(s); // false si ya existía
                         System.out.println(ok ? "Agregado." : "Ya existía (no se repite).");
                     }
 
-                    case 2 -> { // Listar en orden natural
-                        // Muestra todas las palabras en orden alfabético
+                    // ============================================================
+                    // 🧠 PATRÓN 2: CONSULTAS BÁSICAS (LISTADO / EXTREMOS)
+                    // ============================================================
+                    case 2 -> { // listar en orden natural
                         System.out.println(palabras.isEmpty() ? "Conjunto vacío." : "Orden natural: " + palabras);
                     }
 
                     case 3 -> { // first / last
-                        // Obtiene la primera y última palabra del TreeSet
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
                         else {
-                            System.out.println("first(): " + palabras.first()); // menor (alfabéticamente)
-                            System.out.println("last():  " + palabras.last());  // mayor (alfabéticamente)
+                            System.out.println("first(): " + palabras.first());
+                            System.out.println("last():  " + palabras.last());
                         }
                     }
 
+                    // ============================================================
+                    // 🧠 PATRÓN 3: VECINOS / BÚSQUEDA POR PROXIMIDAD
+                    // ============================================================
                     case 4 -> { // lower / higher / ceiling / floor
-                        // Métodos de navegación relativos a un elemento dado
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
                         else {
                             String clave = leerLineaNoVacia(sc, "Elemento de referencia: ");
-                            System.out.println("lower(" + clave + "):   " + palabras.lower(clave));    // inmediatamente menor
-                            System.out.println("higher(" + clave + "):  " + palabras.higher(clave));  // inmediatamente mayor
-                            System.out.println("ceiling(" + clave + "): " + palabras.ceiling(clave)); // igual o mayor
-                            System.out.println("floor(" + clave + "):   " + palabras.floor(clave));   // igual o menor
+                            System.out.println("lower(" + clave + "):   " + palabras.lower(clave));    // < clave
+                            System.out.println("higher(" + clave + "):  " + palabras.higher(clave));  // > clave
+                            System.out.println("ceiling(" + clave + "): " + palabras.ceiling(clave)); // >= clave
+                            System.out.println("floor(" + clave + "):   " + palabras.floor(clave));   // <= clave
                         }
                     }
 
+                    // ============================================================
+                    // 🧠 PATRÓN 4: VISTAS POR RANGO (HEAD/TAIL/SUBSET)
+                    // ============================================================
                     case 5 -> { // headSet / tailSet
-                        // Subconjuntos basados en rangos
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
                         else {
                             String hasta = leerLineaNoVacia(sc, "headSet hasta (exclusivo): ");
                             String desde = leerLineaNoVacia(sc, "tailSet desde (inclusivo): ");
-                            System.out.println("headSet(< " + hasta + "): " + palabras.headSet(hasta));   // todo lo menor que "hasta"
-                            System.out.println("tailSet(>= " + desde + "): " + palabras.tailSet(desde)); // todo lo mayor o igual que "desde"
+                            System.out.println("headSet(< " + hasta + "): " + palabras.headSet(hasta));
+                            System.out.println("tailSet(>= " + desde + "): " + palabras.tailSet(desde));
                         }
                     }
 
                     case 6 -> { // subSet exclusivo e inclusivo
-                        // Muestra subconjuntos con distintos límites
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
                         else {
                             String from = leerLineaNoVacia(sc, "subSet desde: ");
                             String to   = leerLineaNoVacia(sc, "subSet hasta: ");
-
-                            // Subconjunto exclusivo: [from, to)
-                            SortedSet<String> subEx = palabras.subSet(from, to);
+                            SortedSet<String> subEx = palabras.subSet(from, to); // [from, to)
                             System.out.println("subSet exclusivo [" + from + ", " + to + "): " + subEx);
 
-                            // Subconjunto inclusivo: [from, to]
-                            NavigableSet<String> subInc = palabras.subSet(from, true, to, true);
+                            NavigableSet<String> subInc = palabras.subSet(from, true, to, true); // [from, to]
                             System.out.println("subSet inclusivo [" + from + ", " + to + "]: " + subInc);
                         }
                     }
 
+                    // ============================================================
+                    // 🧠 PATRÓN 5: ÓRDENES INVERSOS / RECORRIDOS
+                    // ============================================================
                     case 7 -> { // descendingSet
-                        // Vista invertida del TreeSet (orden descendente)
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
-                        else {
-                            NavigableSet<String> desc = palabras.descendingSet();
-                            // ¡Ojo! Esta vista está vinculada al set original, no es copia independiente
-                            System.out.println("Vista descendente: " + desc);
-                        }
+                        else System.out.println("Vista descendente: " + palabras.descendingSet());
                     }
 
                     case 8 -> { // descendingIterator
-                        // Iterador para recorrer en orden descendente
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
                         else {
                             System.out.print("descendingIterator(): ");
@@ -100,8 +100,10 @@ public class TreeSetString {
                         }
                     }
 
+                    // ============================================================
+                    // 🧠 PATRÓN 6: EXTRACCIÓN DE EXTREMOS (MUTABLE)
+                    // ============================================================
                     case 9 -> { // pollFirst / pollLast
-                        // Extrae y elimina los extremos
                         if (palabras.isEmpty()) System.out.println("Conjunto vacío.");
                         else {
                             String first = palabras.pollFirst(); // elimina el primero
@@ -114,34 +116,39 @@ public class TreeSetString {
                         }
                     }
 
-                    case 10 -> { // comparator
-                        // Muestra el comparador usado en el TreeSet
+                    // ============================================================
+                    // 🧠 PATRÓN 7: COMPARADORES
+                    // ============================================================
+                    case 10 -> { // ver comparator usado
                         Comparator<? super String> comp = palabras.comparator();
                         System.out.println("Comparator usado: " + (comp == null ? "orden natural" : comp));
                     }
 
-                    case 11 -> { // Comparator personalizado
-                        // Nuevo TreeSet ordenado por longitud de palabra
+                    case 11 -> { // demo comparator personalizado (longitud)
                         System.out.println("Creando vista POR LONGITUD (Comparator)...");
-                        TreeSet<String> porLongitud = new TreeSet<>(Comparator
-                                .comparingInt(String::length)                 // primero por longitud
-                                .thenComparing(Comparator.naturalOrder()));  // en caso de empate, por orden natural
-                        porLongitud.addAll(palabras); // se copian todas las palabras
+                        TreeSet<String> porLongitud = new TreeSet<>(
+                                Comparator.comparingInt(String::length)
+                                        .thenComparing(Comparator.naturalOrder())
+                        );
+                        porLongitud.addAll(palabras);
                         System.out.println("Orden por longitud: " + porLongitud);
                     }
 
-                    case 12 -> System.out.println("Saliendo..."); // Fin del programa
+                    // ============================================================
+                    // 🧠 PATRÓN 8: SALIR
+                    // ============================================================
+                    case 12 -> System.out.println("Saliendo...");
 
                     default -> System.out.println("Ingresa un valor válido.");
                 }
 
-            } while (opcion != OPCION_SALIR); // ciclo hasta que se elija salir
+            } while (opcion != OPCION_SALIR);
         }
     }
 
-    // --------- Helpers ---------
-
-    // Imprime el menú con todas las opciones disponibles
+    // =======================
+    // Helpers (I/O)
+    // =======================
     static void mostrarMenu() {
         System.out.println("""
                 
@@ -161,20 +168,18 @@ public class TreeSetString {
                 """);
     }
 
-    // Lee un entero desde consola, validando que sea un número
     static int leerEntero(Scanner sc, String prompt) {
         while (true) {
             System.out.print(prompt);
             String s = sc.nextLine();
             try {
-                return Integer.parseInt(s.trim()); // intenta convertir
+                return Integer.parseInt(s.trim());
             } catch (NumberFormatException e) {
                 System.out.println("Por favor ingresa un número válido.");
             }
         }
     }
 
-    // Lee un entero restringido a un rango [min, max]
     static int leerEntero(Scanner sc, String prompt, int min, int max) {
         while (true) {
             int v = leerEntero(sc, prompt);
@@ -183,12 +188,11 @@ public class TreeSetString {
         }
     }
 
-    // Lee una cadena que no esté vacía
     static String leerLineaNoVacia(Scanner sc, String prompt) {
         while (true) {
             System.out.print(prompt);
             String s = sc.nextLine();
-            if (s != null && !s.isBlank()) return s.trim(); // valida que no sea vacío
+            if (s != null && !s.isBlank()) return s.trim();
             System.out.println("Entrada vacía. Intenta de nuevo.");
         }
     }

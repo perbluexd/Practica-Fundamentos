@@ -3,7 +3,23 @@ package PartitionBy;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * PARTITIONINGBY AVANZADO (máximo y top-k por partición)
+ * ------------------------------------------------------
+ * Patrones cubiertos:
+ * 1️⃣ partitioningBy + maxBy → máximo elemento por partición
+ * 1️⃣b partitioningBy + collectingAndThen(maxBy) → proyectar campo (nombre) con fallback
+ * 2️⃣ partitioningBy + collectingAndThen(toList→sorted→limit) → Top-K por partición
+ *
+ * Nota:
+ * - La partición es: salario > 4000 (true/false)
+ * - Se preservan todos los nombres y firmas originales.
+ */
 public class ejemplo3 {
+
+    // ============================================================
+    // 0) MODELO BASE
+    // ============================================================
     static class Empleado {
         private final String nombre;
         private final int salario;
@@ -15,6 +31,9 @@ public class ejemplo3 {
         @Override public String toString() { return nombre + "(" + salario + ")"; }
     }
 
+    // ============================================================
+    // MAIN — Demostración de patrones con partitioningBy
+    // ============================================================
     public static void main(String[] args) {
         List<Empleado> empleados = List.of(
                 new Empleado("Ana", 3800),
@@ -25,14 +44,21 @@ public class ejemplo3 {
                 new Empleado("Fede",  5600)
         );
 
-        // 1) Máximo salario en cada partición (salario > 4000 ?)
+        // ------------------------------------------------------------
+        // 1) PATRÓN: máximo por partición (Optional<Empleado>)
+        //    - Predicado: e.getSalario() > 4000
+        //    - Downstream: maxBy(comparingInt)
+        // ------------------------------------------------------------
         Map<Boolean, Optional<Empleado>> maxPorParticion =
                 empleados.stream().collect(Collectors.partitioningBy(
                         e -> e.getSalario() > 4000,
                         Collectors.maxBy(Comparator.comparingInt(Empleado::getSalario))
                 ));
 
-        // 1b) Igual que 1), pero devolviendo directamente el NOMBRE (o "—" si vacío)
+        // ------------------------------------------------------------
+        // 1b) PATRÓN: máximo por partición → proyectado a NOMBRE (String)
+        //    - collectingAndThen(maxBy, transformar Optional → String con orElse)
+        // ------------------------------------------------------------
         Map<Boolean, String> nombreMaxPorParticion =
                 empleados.stream().collect(Collectors.partitioningBy(
                         e -> e.getSalario() > 4000,
@@ -42,7 +68,10 @@ public class ejemplo3 {
                         )
                 ));
 
-        // 2) Top-3 por partición (ordenados por salario desc, y por nombre para desempatar)
+        // ------------------------------------------------------------
+        // 2) PATRÓN: Top-3 por partición (lista ordenada desc por salario, y nombre para empate)
+        //    - collectingAndThen(toList(), stream->sorted->limit(3)->toList)
+        // ------------------------------------------------------------
         Comparator<Empleado> cmp = Comparator
                 .comparingInt(Empleado::getSalario).reversed()
                 .thenComparing(Empleado::getNombre);
@@ -59,7 +88,9 @@ public class ejemplo3 {
                         )
                 ));
 
-        // --- Mostrar resultados ---
+        // ------------------------------------------------------------
+        // Mostrar resultados
+        // ------------------------------------------------------------
         System.out.println("Máximo por partición (Optional): " + maxPorParticion);
         System.out.println("Nombre del máximo por partición: " + nombreMaxPorParticion);
         System.out.println("Top-3 por partición: " + top3PorParticion);
